@@ -1,0 +1,44 @@
+name: Terraform Modules
+
+on:
+  pull_request: 
+    branchs:
+      - master
+
+jobs:
+  terraform:
+    name: Terrafom Modules Stack
+    runs-on: ubuntu-latest
+    environment: stage
+    strategy:
+      max-parallel: 1
+      matrix: 
+        dir: [ iam_instance_profile, policy, roles ]
+
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION}}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: ${{ matrix.dir }}
+
+      - name: Terraform Validade
+        id: validate
+        run: terraform validate -no-color
+        working-directory: ${{ matrix.dir }}
+      
+      
