@@ -18,6 +18,7 @@ resource "aws_autoscaling_group" "autoscaling" {
     default_cooldown            = "300"
 
     launch_configuration        = aws_launch_configuration.LaunchConfiguration.name
+    load_balancers              = [ var.load_balancers ] 
     vpc_zone_identifier         = var.subnets_zones    
     
     termination_policies        = [        
